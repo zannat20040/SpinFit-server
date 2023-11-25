@@ -25,12 +25,20 @@ async function run() {
 
         const database = client.db("SpinFit");
         const subscribersDB = database.collection("newsletterCollection");
+        const usersInfoDB = database.collection("usersInfoDBCollection");
 
         // newsletter
 
         app.post('/subscribers', async(req,res)=>{
             const data  = req.body
             const result = await subscribersDB.insertOne(data);
+            res.send(result)
+        })
+
+        // user data set
+        app.post('/users', async(req,res)=>{
+            const data  = req.body
+            const result = await usersInfoDB.insertOne(data);
             res.send(result)
         })
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
