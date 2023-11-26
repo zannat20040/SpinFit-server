@@ -42,6 +42,13 @@ async function run() {
             const result = await usersInfoDB.insertOne(data);
             res.send(result)
         })
+        // get userInfo
+        app.get('/users', async(req,res)=>{
+            const userEmail  = req.query.email
+            const query = { email: userEmail }
+            const result = await usersInfoDB.findOne(query);
+            res.send(result)
+        })
 
         // gallery data get
         app.get('/gallery', async(req,res)=>{
