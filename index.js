@@ -26,6 +26,7 @@ async function run() {
         const database = client.db("SpinFit");
         const subscribersDB = database.collection("newsletterCollection");
         const usersInfoDB = database.collection("usersInfoDBCollection");
+        const galleryDB = database.collection("galleryCollection");
 
         // newsletter
 
@@ -41,6 +42,14 @@ async function run() {
             const result = await usersInfoDB.insertOne(data);
             res.send(result)
         })
+
+        // gallery data get
+        app.get('/gallery', async(req,res)=>{
+            const result = await galleryDB.find().toArray();
+            res.send(result)
+        })
+
+
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
     }
