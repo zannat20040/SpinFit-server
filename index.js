@@ -27,6 +27,7 @@ async function run() {
         const subscribersDB = database.collection("newsletterCollection");
         const usersInfoDB = database.collection("usersInfoDBCollection");
         const galleryDB = database.collection("galleryCollection");
+        const blogDB = database.collection("blogCollection");
 
         // newsletter
 
@@ -42,6 +43,15 @@ async function run() {
             const result = await usersInfoDB.insertOne(data);
             res.send(result)
         })
+
+        // blog data insert
+        app.post('/blog', async(req,res)=>{
+            const data  = req.body
+            const result = await blogDB.insertOne(data);
+            res.send(result)
+        })
+
+
         // get userInfo
         app.get('/users', async(req,res)=>{
             const userEmail  = req.query.email
