@@ -34,15 +34,28 @@ async function run() {
 
         app.post('/subscribers', async (req, res) => {
             const data = req.body
-            const result = await subscribersDB.insertOne(data);
-            res.send(result)
+            const query = { email: data.email }
+            const existSubscribe = await subscribersDB.findOne(query);
+            if (existSubscribe) {
+                res.status(400).send({ message: "Email already exists" });
+            } else {
+                const result = await subscribersDB.insertOne(data);
+                res.send(result);
+            }
         })
 
         // user data set
         app.post('/users', async (req, res) => {
             const data = req.body
-            const result = await usersInfoDB.insertOne(data);
-            res.send(result)
+            const query = { email: data.email }
+            const existingUser = await usersInfoDB.findOne(query);
+
+            if (existingUser) {
+                res.status(400).send({ message: "Email already exists" });
+            } else {
+                const result = await usersInfoDB.insertOne(data);
+                res.send(result);
+            }
         })
 
         // blog data insert
@@ -73,6 +86,7 @@ async function run() {
         })
         // forum data get
         app.get('/blog', async (req, res) => {
+
             const result = await blogDB.find().toArray();
             res.send(result)
         })
@@ -100,7 +114,7 @@ async function run() {
                 res.send(result)
 
             }
-            else if(data.like){
+            else if (data.like) {
                 const updateLike = {
                     $set: {
                         like: data.updatedLike.increaselike,
