@@ -32,58 +32,86 @@ async function run() {
 
         // newsletter
 
-        app.post('/subscribers', async(req,res)=>{
-            const data  = req.body
+        app.post('/subscribers', async (req, res) => {
+            const data = req.body
             const result = await subscribersDB.insertOne(data);
             res.send(result)
         })
 
         // user data set
-        app.post('/users', async(req,res)=>{
-            const data  = req.body
+        app.post('/users', async (req, res) => {
+            const data = req.body
             const result = await usersInfoDB.insertOne(data);
             res.send(result)
         })
 
         // blog data insert
-        app.post('/blog', async(req,res)=>{
-            const data  = req.body
+        app.post('/blog', async (req, res) => {
+            const data = req.body
             const result = await blogDB.insertOne(data);
             res.send(result)
         })
-        app.post('/allClass', async(req,res)=>{
-            const data  = req.body
+        app.post('/allClass', async (req, res) => {
+            const data = req.body
             const result = await clasessDB.insertOne(data);
             res.send(result)
         })
 
 
         // get userInfo
-        app.get('/users', async(req,res)=>{
-            const userEmail  = req.query.email
+        app.get('/users', async (req, res) => {
+            const userEmail = req.query.email
             const query = { email: userEmail }
             const result = await usersInfoDB.findOne(query);
             res.send(result)
         })
 
         // gallery data get
-        app.get('/gallery', async(req,res)=>{
+        app.get('/gallery', async (req, res) => {
             const result = await galleryDB.find().toArray();
             res.send(result)
         })
         // forum data get
-        app.get('/blog', async(req,res)=>{
+        app.get('/blog', async (req, res) => {
             const result = await blogDB.find().toArray();
             res.send(result)
         })
 
-        app.get('/blog/:id', async(req,res)=>{
+        app.get('/blog/:id', async (req, res) => {
             const data = req.params.id;
-            const query  = {_id : new ObjectId(data)}
+            const query = { _id: new ObjectId(data) }
             const result = await blogDB.findOne(query);
             res.send(result)
         })
 
+        // update like value
+        app.patch('/blog/:id', async (req, res) => {
+            const id = req.params.id;
+            const data = req.body
+            const query = { _id: new ObjectId(id) };
+            if (data.dislike) {
+                const updateDisLike = {
+                    $set: {
+                        dislike: data.updatedDislike.increaseDislike,
+                        dislikedUser: data.updatedDislike.dislikedUser
+                    }
+                }
+                const result = await blogDB.updateOne(query, updateDisLike);
+                res.send(result)
+
+            }
+            else if(data.like){
+                const updateLike = {
+                    $set: {
+                        like: data.updatedLike.increaselike,
+                        likedUser: data.updatedLike.likedUser
+                    }
+                }
+                const result = await blogDB.updateOne(query, updateLike);
+                res.send(result)
+            }
+
+        })
 
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
@@ -94,8 +122,8 @@ run().catch(console.dir);
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
-  })
-  
-  app.listen(port, () => {
+})
+
+app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
-  })
+})
