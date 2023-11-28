@@ -64,11 +64,21 @@ async function run() {
             const result = await blogDB.insertOne(data);
             res.send(result)
         })
+        // class slot store
         app.post('/allClass', async (req, res) => {
             const data = req.body
+
+            // const updateDisLike = {
+            //     $set: {
+            //         dislike: data.updatedDislike.increaseDislike,
+            //         dislikedUser: data.updatedDislike.dislikedUser
+            //     }
+            // }
             const result = await clasessDB.insertOne(data);
             res.send(result)
         })
+
+       
 
 
         // get userInfo
