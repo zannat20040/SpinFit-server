@@ -28,6 +28,7 @@ async function run() {
         const usersInfoDB = database.collection("usersInfoDBCollection");
         const galleryDB = database.collection("galleryCollection");
         const blogDB = database.collection("blogCollection");
+        const clasessDB = database.collection("classesCollection");
 
         // newsletter
 
@@ -50,6 +51,11 @@ async function run() {
             const result = await blogDB.insertOne(data);
             res.send(result)
         })
+        app.post('/allClass', async(req,res)=>{
+            const data  = req.body
+            const result = await clasessDB.insertOne(data);
+            res.send(result)
+        })
 
 
         // get userInfo
@@ -63,6 +69,18 @@ async function run() {
         // gallery data get
         app.get('/gallery', async(req,res)=>{
             const result = await galleryDB.find().toArray();
+            res.send(result)
+        })
+        // forum data get
+        app.get('/blog', async(req,res)=>{
+            const result = await blogDB.find().toArray();
+            res.send(result)
+        })
+
+        app.get('/blog/:id', async(req,res)=>{
+            const data = req.params.id;
+            const query  = {_id : new ObjectId(data)}
+            const result = await blogDB.findOne(query);
             res.send(result)
         })
 
