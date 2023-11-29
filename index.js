@@ -87,7 +87,7 @@ async function run() {
             // res.send(result)
         })
 
-       
+
 
 
         // get userInfo
@@ -109,11 +109,24 @@ async function run() {
             const result = await blogDB.find().toArray();
             res.send(result)
         })
-
+        // blog deatils 
         app.get('/blog/:id', async (req, res) => {
             const data = req.params.id;
             const query = { _id: new ObjectId(data) }
             const result = await blogDB.findOne(query);
+            res.send(result)
+        })
+        // trainer application
+        app.get('/application', async (req, res) => {
+            const userRole = req.query.role
+            const query = { role: userRole }
+            const result = await trainerApplicationDB.find(query).toArray();
+            res.send(result)
+        })
+        app.get('/application/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await trainerApplicationDB.findOne(query);
             res.send(result)
         })
 
