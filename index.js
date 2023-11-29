@@ -29,6 +29,7 @@ async function run() {
         const galleryDB = database.collection("galleryCollection");
         const blogDB = database.collection("blogCollection");
         const clasessDB = database.collection("classesCollection");
+        const trainerApplicationDB = database.collection("trainerApplicationDB");
 
         // newsletter
 
@@ -67,15 +68,23 @@ async function run() {
         // class slot store
         app.post('/allClass', async (req, res) => {
             const data = req.body
-
-            // const updateDisLike = {
-            //     $set: {
-            //         dislike: data.updatedDislike.increaseDislike,
-            //         dislikedUser: data.updatedDislike.dislikedUser
-            //     }
-            // }
             const result = await clasessDB.insertOne(data);
             res.send(result)
+        })
+
+        app.post('/trainerApplication', async (req, res) => {
+            const data = req.body
+            const query = { email: data.email }
+            const existingUser = await trainerApplicationDB.findOne(query);
+
+            if (existingUser) {
+                res.status(400).send({ message: 'You have already applied' })
+            } else {
+                const result = await trainerApplicationDB.insertOne(data);
+                res.send(result);
+            }
+            // const result = await trainerApplicationDB.insertOne(data);
+            // res.send(result)
         })
 
        
