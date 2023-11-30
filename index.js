@@ -98,9 +98,15 @@ async function run() {
         // get userInfo
         app.get('/users', async (req, res) => {
             const userEmail = req.query.email
-            const query = { email: userEmail }
-            const result = await usersInfoDB.findOne(query);
-            res.send(result)
+            if(userEmail){
+                const query = { email: userEmail }
+                const result = await usersInfoDB.findOne(query);
+                res.send(result)    
+            }
+            else{
+                const result = await usersInfoDB.find().toArray();
+                res.send(result)   
+            }
         })
 
         // gallery data get
