@@ -30,6 +30,7 @@ async function run() {
         const blogDB = database.collection("blogCollection");
         const clasessDB = database.collection("classesCollection");
         const trainerApplicationDB = database.collection("trainerApplicationDB");
+        const bookingsDB = database.collection("bookingsCollection");
 
         // newsletter
 
@@ -69,6 +70,11 @@ async function run() {
         app.post('/allClass', async (req, res) => {
             const data = req.body
             const result = await clasessDB.insertOne(data);
+            res.send(result)
+        })
+        app.post('/bookings', async (req, res) => {
+            const data = req.body
+            const result = await bookingsDB.insertOne(data);
             res.send(result)
         })
 
