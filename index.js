@@ -78,6 +78,7 @@ async function run() {
             res.send(result)
         })
 
+
         app.post('/trainerApplication', async (req, res) => {
             const data = req.body
             const query = { email: data.email }
@@ -109,6 +110,10 @@ async function run() {
             }
         })
 
+        app.get('/bookings', async (req, res) => {
+            const result = await bookingsDB.find().toArray();
+            res.send(result)
+        })
         // gallery data get
         app.get('/gallery', async (req, res) => {
             const result = await galleryDB.find().toArray();
