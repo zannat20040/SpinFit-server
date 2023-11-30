@@ -28,7 +28,7 @@ async function run() {
         const usersInfoDB = database.collection("usersInfoDBCollection");
         const galleryDB = database.collection("galleryCollection");
         const blogDB = database.collection("blogCollection");
-        const clasessDB = database.collection("classesCollection");
+        const classesDB = database.collection("classesCollection");
         const trainerApplicationDB = database.collection("trainerApplicationDB");
         const bookingsDB = database.collection("bookingsCollection");
 
@@ -89,8 +89,7 @@ async function run() {
                 const result = await trainerApplicationDB.insertOne(data);
                 res.send(result);
             }
-            // const result = await trainerApplicationDB.insertOne(data);
-            // res.send(result)
+    
         })
 
 
@@ -111,8 +110,12 @@ async function run() {
         })
         // forum data get
         app.get('/blog', async (req, res) => {
-
             const result = await blogDB.find().toArray();
+            res.send(result)
+        })
+        // classes data get
+        app.get('/classes', async (req, res) => {
+            const result = await classesDB.find().toArray();
             res.send(result)
         })
         // blog deatils 
@@ -129,6 +132,8 @@ async function run() {
             const result = await trainerApplicationDB.find(query).toArray();
             res.send(result)
         })
+     
+        // trainer details by email
         app.get('/application/:id', async (req, res) => {
             const id = req.params.id
             const query = { _id: new ObjectId(id) }
