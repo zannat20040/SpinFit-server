@@ -69,7 +69,7 @@ async function run() {
         // class slot store
         app.post('/allClass', async (req, res) => {
             const data = req.body
-            const result = await clasessDB.insertOne(data);
+            const result = await classesDB.insertOne(data);
             res.send(result)
         })
         app.post('/bookings', async (req, res) => {
@@ -116,6 +116,11 @@ async function run() {
         // classes data get
         app.get('/classes', async (req, res) => {
             const result = await classesDB.find().toArray();
+            res.send(result)
+        })
+        // subscriber data get
+        app.get('/subscribers', async (req, res) => {
+            const result = await subscribersDB.find().toArray();
             res.send(result)
         })
         // blog deatils 
