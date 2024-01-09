@@ -1,15 +1,20 @@
 const express = require('express');
 const cors = require('cors')
+
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const port = process.env.PORT || 5000;
 const app = express();
 
+app.use(express.static("public"));
 app.use(express.json());
 app.use(cors());
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.64uf1bl.mongodb.net/?retryWrites=true&w=majority`;
+
+
+const stripe = require("stripe")(process.env.SECRET_KEY);
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -72,13 +77,14 @@ async function run() {
             const result = await classesDB.insertOne(data);
             res.send(result)
         })
+        // bookings
         app.post('/bookings', async (req, res) => {
             const data = req.body
             const result = await bookingsDB.insertOne(data);
             res.send(result)
         })
 
-
+        // BeTrainer application
         app.post('/trainerApplication', async (req, res) => {
             const data = req.body
             const query = { email: data.email }
@@ -90,23 +96,20 @@ async function run() {
                 const result = await trainerApplicationDB.insertOne(data);
                 res.send(result);
             }
-    
+
         })
-
-
-
 
         // get userInfo
         app.get('/users', async (req, res) => {
             const userEmail = req.query.email
-            if(userEmail){
+            if (userEmail) {
                 const query = { email: userEmail }
                 const result = await usersInfoDB.findOne(query);
-                res.send(result)    
+                res.send(result)
             }
-            else{
+            else {
                 const result = await usersInfoDB.find().toArray();
-                res.send(result)   
+                res.send(result)
             }
         })
 
@@ -129,11 +132,13 @@ async function run() {
             const result = await classesDB.find().toArray();
             res.send(result)
         })
+
         // subscriber data get
         app.get('/subscribers', async (req, res) => {
             const result = await subscribersDB.find().toArray();
             res.send(result)
         })
+
         // blog deatils 
         app.get('/blog/:id', async (req, res) => {
             const data = req.params.id;
@@ -148,7 +153,7 @@ async function run() {
             const result = await trainerApplicationDB.find(query).toArray();
             res.send(result)
         })
-     
+
         // trainer details by email
         app.get('/application/:id', async (req, res) => {
             const id = req.params.id
@@ -185,6 +190,32 @@ async function run() {
             }
 
         })
+
+        // payment
+
+        app.post("/create-payment-intent", async (req, res) => {
+            const { packagePrice } = req.body;
+            // console.log('price',packagePrice)
+
+            if(packagePrice){
+                const price = parseInt(packagePrice * 100)
+
+                console.log(price)
+                // Create a PaymentIntent with the order amount and currency
+                const paymentIntent = await stripe.paymentIntents.create({
+                    amount: price,
+                    currency: "usd",
+                    payment_method_types: ["card"],
+    
+                });
+    
+                res.send({
+                    clientSecret: paymentIntent.client_secret,
+                });
+            }
+           
+        });
+
 
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
