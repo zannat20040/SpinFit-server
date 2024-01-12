@@ -192,28 +192,23 @@ async function run() {
         })
 
         // payment
-
         app.post("/create-payment-intent", async (req, res) => {
-            const { packagePrice } = req.body;
+            const packageInfo = req.body;
             // console.log('price',packagePrice)
 
-            if(packagePrice){
-                const price = parseInt(packagePrice * 100)
-
-                console.log(price)
-                // Create a PaymentIntent with the order amount and currency
+            if (packageInfo.packagePrice) {
+                const price = parseInt(packageInfo.packagePrice * 100)
                 const paymentIntent = await stripe.paymentIntents.create({
                     amount: price,
                     currency: "usd",
                     payment_method_types: ["card"],
-    
+
                 });
-    
                 res.send({
-                    clientSecret: paymentIntent.client_secret,
+                    clientSecret: paymentIntent.client_secret
                 });
             }
-           
+
         });
 
 
