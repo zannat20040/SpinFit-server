@@ -36,6 +36,7 @@ async function run() {
         const classesDB = database.collection("classesCollection");
         const trainerApplicationDB = database.collection("trainerApplicationDB");
         const bookingsDB = database.collection("bookingsCollection");
+        const salariesDB = database.collection("salariesCollection");
 
         // newsletter
 
@@ -77,10 +78,17 @@ async function run() {
             const result = await classesDB.insertOne(data);
             res.send(result)
         })
+
         // bookings
         app.post('/bookings', async (req, res) => {
             const data = req.body
             const result = await bookingsDB.insertOne(data);
+            res.send(result)
+        })
+        // salaries
+        app.post('/salaries', async (req, res) => {
+            const data = req.body
+            const result = await salariesDB.insertOne(data);
             res.send(result)
         })
 
@@ -112,15 +120,32 @@ async function run() {
                 res.send(result)
             }
         })
-
+        
+        
+        
+        // get all class data
+        app.get('/allClass/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await classesDB.findOne(query);
+            res.send(result)
+        })
         app.get('/bookings', async (req, res) => {
             const result = await bookingsDB.find().toArray();
             res.send(result)
         })
         // gallery data get
         app.get('/gallery', async (req, res) => {
-            const result = await galleryDB.find().toArray();
-            res.send(result)
+            const userEmail = req.query.email
+            if(userEmail){
+                const query = {userEmail:userEmail}
+                const result = await galleryDB.find(query).toArray();
+                res.send(result)
+            }
+            else{
+                const result = await galleryDB.find().toArray();
+                res.send(result)
+            }
         })
         // forum data get
         app.get('/blog', async (req, res) => {
@@ -191,7 +216,19 @@ async function run() {
 
         })
 
-        // payment
+        app.patch('/users', async(req,res)=>{
+            const trainerEmail = req.query.email;
+            const {salaryMonth } = req.body
+            const query = { email: trainerEmail };
+           
+             const result = await usersInfoDB.updateOne(
+               query,
+                { $set: { salaryMonth } }
+              );
+             res.send(result);
+        })
+
+        // booking payment
         app.post("/create-payment-intent", async (req, res) => {
             const packageInfo = req.body;
             // console.log('price',packagePrice)
@@ -200,6 +237,25 @@ async function run() {
                 const price = parseInt(packageInfo.packagePrice * 100)
                 const paymentIntent = await stripe.paymentIntents.create({
                     amount: price,
+                    currency: "usd",
+                    payment_method_types: ["card"],
+
+                });
+                res.send({
+                    clientSecret: paymentIntent.client_secret
+                });
+            }
+
+        });
+
+        // salary payment
+        app.post("/salary-payment-intent", async (req, res) => {
+            const salaryInfo = req.body;
+3
+            if (salaryInfo.salary) {
+                const salary = parseInt(salaryInfo.salary * 100)
+                const paymentIntent = await stripe.paymentIntents.create({
+                    amount: salary,
                     currency: "usd",
                     payment_method_types: ["card"],
 
