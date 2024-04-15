@@ -110,9 +110,16 @@ async function run() {
         // get userInfo
         app.get('/users', async (req, res) => {
             const userEmail = req.query.email
+            const role = req.query.role
+
             if (userEmail) {
                 const query = { email: userEmail }
                 const result = await usersInfoDB.findOne(query);
+                res.send(result)
+            }
+            else if (role) {
+                const query = { role: role }
+                const result = await usersInfoDB.find(query).toArray();
                 res.send(result)
             }
             else {
@@ -120,9 +127,9 @@ async function run() {
                 res.send(result)
             }
         })
-        
-        
-        
+
+
+
         // get all class data
         app.get('/allClass/:id', async (req, res) => {
             const id = req.params.id
@@ -137,12 +144,12 @@ async function run() {
         // gallery data get
         app.get('/gallery', async (req, res) => {
             const userEmail = req.query.email
-            if(userEmail){
-                const query = {userEmail:userEmail}
+            if (userEmail) {
+                const query = { userEmail: userEmail }
                 const result = await galleryDB.find(query).toArray();
                 res.send(result)
             }
-            else{
+            else {
                 const result = await galleryDB.find().toArray();
                 res.send(result)
             }
@@ -176,6 +183,7 @@ async function run() {
             const userRole = req.query.role
             const query = { role: userRole }
             const result = await trainerApplicationDB.find(query).toArray();
+            console.log(result)
             res.send(result)
         })
 
@@ -216,16 +224,33 @@ async function run() {
 
         })
 
-        app.patch('/users', async(req,res)=>{
+        app.patch('/users', async (req, res) => {
             const trainerEmail = req.query.email;
-            const {salaryMonth } = req.body
+            const { salaryMonth, role, status } = req.body
             const query = { email: trainerEmail };
-           
-             const result = await usersInfoDB.updateOne(
-               query,
-                { $set: { salaryMonth } }
-              );
-             res.send(result);
+
+            if (salaryMonth) {
+                const result = await usersInfoDB.updateOne(
+                    query,
+                    { $set: { salaryMonth } }
+                );
+                return res.send(result);
+            }
+
+            else if (role && status) {
+                if (status === "accepted") {
+                    const userResut = await usersInfoDB.updateOne(query, { $set: { role } });
+                    const applyResult = await trainerApplicationDB.updateOne(query, { $set: { role } });
+                    console.log(userResut)
+                    return res.send(applyResult);
+                }
+                else {
+                    const deleteResult = await trainerApplicationDB.deleteOne({ email: trainerEmail });
+                    return res.send(deleteResult);
+
+                }
+            }
+
         })
 
         // booking payment
@@ -251,7 +276,7 @@ async function run() {
         // salary payment
         app.post("/salary-payment-intent", async (req, res) => {
             const salaryInfo = req.body;
-3
+            3
             if (salaryInfo.salary) {
                 const salary = parseInt(salaryInfo.salary * 100)
                 const paymentIntent = await stripe.paymentIntents.create({
