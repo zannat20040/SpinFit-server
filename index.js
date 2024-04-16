@@ -38,6 +38,7 @@ async function run() {
         const bookingsDB = database.collection("bookingsCollection");
         const salariesDB = database.collection("salariesCollection");
 
+
         // newsletter
 
         app.post('/subscribers', async (req, res) => {
@@ -85,6 +86,7 @@ async function run() {
             const result = await bookingsDB.insertOne(data);
             res.send(result)
         })
+
         // salaries
         app.post('/salaries', async (req, res) => {
             const data = req.body
@@ -105,6 +107,49 @@ async function run() {
                 res.send(result);
             }
 
+        })
+
+        // get balance 
+
+        app.get('/balance', async (req, res) => {
+
+            // Retrieve booking payments from MongoDB
+            const bookings = await bookingsDB.find().toArray();
+            // Retrieve trainer payments from MongoDB
+            const trainers = await salariesDB.find().toArray();
+
+            // Calculate total booking payments
+            const totalBookingPayments = bookings.reduce((acc, data) => acc + parseInt(data.packagePrice), 0);
+
+            // Calculate total trainer payments
+            const totalTrainerPayments = trainers.reduce((acc, data) => acc + parseInt(data.salary), 0);
+
+            // Calculate total remaining balance
+
+            const totalRemainingBalance = totalBookingPayments - totalTrainerPayments;
+
+            // Ensure total trainer payments do not exceed total booking payments
+            if (totalTrainerPayments > totalBookingPayments) {
+                // console.log('Enter into if condition. total remaining: ',totalRemainingBalance)
+                // console.log('Enter into if condition. total booking: ',totalBookingPayments)
+                // console.log(' Enter into if condition. total payment: ',totalTrainerPayments)
+                return res.send({
+                    totalRemainingBalance,
+                    totalBookingPayments,
+                    totalTrainerPayments
+                });
+            }
+
+            else {
+                // console.log('total remaining: ',totalRemainingBalance)
+                // console.log('total booking: ',totalBookingPayments)
+                // console.log('total payment: ',totalTrainerPayments)
+                return res.send({
+                    totalRemainingBalance,
+                    totalBookingPayments,
+                    totalTrainerPayments
+                });
+            }
         })
 
         // get userInfo
@@ -128,8 +173,6 @@ async function run() {
             }
         })
 
-
-
         // get all class data
         app.get('/allClass/:id', async (req, res) => {
             const id = req.params.id
@@ -137,10 +180,12 @@ async function run() {
             const result = await classesDB.findOne(query);
             res.send(result)
         })
+
         app.get('/bookings', async (req, res) => {
             const result = await bookingsDB.find().toArray();
             res.send(result)
         })
+
         // gallery data get
         app.get('/gallery', async (req, res) => {
             const userEmail = req.query.email
@@ -154,11 +199,13 @@ async function run() {
                 res.send(result)
             }
         })
+
         // forum data get
         app.get('/blog', async (req, res) => {
             const result = await blogDB.find().toArray();
             res.send(result)
         })
+
         // classes data get
         app.get('/classes', async (req, res) => {
             const result = await classesDB.find().toArray();
@@ -178,6 +225,7 @@ async function run() {
             const result = await blogDB.findOne(query);
             res.send(result)
         })
+        
         // trainer application
         app.get('/application', async (req, res) => {
             const userRole = req.query.role
