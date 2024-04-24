@@ -176,8 +176,19 @@ async function run() {
         })
 
         app.get('/bookings', async (req, res) => {
-            const result = await bookingsDB.find().toArray();
-            res.send(result)
+            const email  = req.query.traineeEmail
+            if(email){
+                const query = {
+                    traineeEmail: email,
+                };
+                const result = await bookingsDB.find(query).toArray();
+                console.log(result)
+                return res.send(result)
+            }
+            else{
+                const result = await bookingsDB.find().toArray();
+                return res.send(result)
+            }
         })
 
         app.get('/bookings/:email', async (req, res) => {
