@@ -130,9 +130,6 @@ async function run() {
 
             // Ensure total trainer payments do not exceed total booking payments
             if (totalTrainerPayments > totalBookingPayments) {
-                // console.log('Enter into if condition. total remaining: ',totalRemainingBalance)
-                // console.log('Enter into if condition. total booking: ',totalBookingPayments)
-                // console.log(' Enter into if condition. total payment: ',totalTrainerPayments)
                 return res.send({
                     totalRemainingBalance,
                     totalBookingPayments,
@@ -141,9 +138,6 @@ async function run() {
             }
 
             else {
-                // console.log('total remaining: ',totalRemainingBalance)
-                // console.log('total booking: ',totalBookingPayments)
-                // console.log('total payment: ',totalTrainerPayments)
                 return res.send({
                     totalRemainingBalance,
                     totalBookingPayments,
@@ -186,6 +180,13 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/bookings/:email', async (req, res) => {
+            const email = req.params.email
+            const query = {trainerEmail: email}
+            const result = await bookingsDB.find(query).toArray();
+            res.send(result)
+        })
+       
         // gallery data get
         app.get('/gallery', async (req, res) => {
             const userEmail = req.query.email
@@ -231,7 +232,14 @@ async function run() {
             const userRole = req.query.role
             const query = { role: userRole }
             const result = await trainerApplicationDB.find(query).toArray();
-            console.log(result)
+            res.send(result)
+        })
+        // trainer application
+        app.get('/application/:email', async (req, res) => {
+            const email = req.params.email
+            console.log(email)
+            const query = {email: email}
+            const result = await trainerApplicationDB.findOne(query);
             res.send(result)
         })
 
@@ -289,7 +297,6 @@ async function run() {
                 if (status === "accepted") {
                     const userResut = await usersInfoDB.updateOne(query, { $set: { role } });
                     const applyResult = await trainerApplicationDB.updateOne(query, { $set: { role } });
-                    console.log(userResut)
                     return res.send(applyResult);
                 }
                 else {
@@ -304,7 +311,6 @@ async function run() {
         // booking payment
         app.post("/create-payment-intent", async (req, res) => {
             const packageInfo = req.body;
-            // console.log('price',packagePrice)
 
             if (packageInfo.packagePrice) {
                 const price = parseInt(packageInfo.packagePrice * 100)
