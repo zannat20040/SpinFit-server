@@ -182,7 +182,7 @@ async function run() {
                     traineeEmail: email,
                 };
                 const result = await bookingsDB.find(query).toArray();
-                console.log(result)
+                // console.log(result)
                 return res.send(result)
             }
             else{
@@ -248,7 +248,7 @@ async function run() {
         // trainer application
         app.get('/application/:email', async (req, res) => {
             const email = req.params.email
-            console.log(email)
+            // console.log(email)
             const query = {email: email}
             const result = await trainerApplicationDB.findOne(query);
             res.send(result)
