@@ -13,6 +13,8 @@ app.use(cors());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.64uf1bl.mongodb.net/?retryWrites=true&w=majority`;
 
+console.log(process.env.DB_USER)
+console.log(process.env.DB_PASS)
 
 const stripe = require("stripe")(process.env.SECRET_KEY);
 
